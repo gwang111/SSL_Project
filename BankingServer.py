@@ -1,6 +1,5 @@
 import sys
 import socket
-import multiprocessing
 
 class Account:
     def __init__(self, name, pwd, publicKey, balance):
@@ -28,15 +27,39 @@ class BankingServer:
 
     def SSLHandShake(self): pass
 
-    def startServer(self): 
-        Running = True
+    def openingServer(self): 
+        # Establish listening from port
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('localhost', 10000)
+        print('[Banking Server] Starting Up On:', server_address[0], 'Port:', server_address[1])
+        sock.bind(server_address)
+        sock.listen(1)
         
-        print('[Banking Server] Started...')
-        while(Running):
-            break    
+        # Wait for ATM To Connect
+        while (True):
+            msg = ''
 
-def startup():
+            print('[Banking Server] Waiting For Connection From ATM...')
+            connection, client_address = sock.accept()   
+            #connection.setblocking(0)
+            try:
+                while (True):
+                    chunk = connection.recv(1024)
+                    if (chunk and chunk.decode() != 'DONE'): msg += chunk.decode()
+                    else: 
+                        print('[Banking Server] Message Received')
+                        send = '[From Banking Server] Received'
+                        connection.sendall(send.encode())
+                        connection.sendall('DONE'.encode())
+                        msg = 'DONE'
+                        break
+            finally: connection.close()
+            
+            if (msg == 'DONE'): break
+
+def startingUp():
     server = BankingServer()
-    server.startServer()
+    server.openingServer()
+    print('[Banking Server] Shutting Down...')
 
-if __name__ == '__main__': startup()
+if __name__ == '__main__': startingUp()

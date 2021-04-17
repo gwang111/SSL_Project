@@ -9,6 +9,8 @@ class ATM:
 
     def establishConnection(self, user_name, pwd): pass
 
+    def SSLHandShake(self): pass
+
     def startATM(self):
         running = True
 

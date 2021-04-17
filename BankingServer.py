@@ -26,6 +26,8 @@ class BankingServer:
     def __init__(self):
         self.bank = Bank()
 
+    def SSLHandShake(self): pass
+
     def startServer(self): 
         Running = True
         

@@ -1,24 +1,15 @@
 import sys
 import socket
+import BG as BG
+import DES as DES
 
 class ATM: 
     def __init__(self): pass
 
-    def SSLHandShake(self): pass # <--- TODO
-
-    def sendRequests(self): pass # <--- TODO
-
-    def establishConnection(self, user_name):
-        # Establish listening from port
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_address = ('localhost', 10000)
-        print('[ATM Client] Connecting To:', server_address[0], "Port:", server_address[1])
-        sock.connect(server_address)
-
-        # HandShake Protocol should happen here
-        self.SSLHandShake()
-
+    def SSLHandShake(self, user_name, sock):
+        successful = True
         # Below is just palaceholder code to confirm working message passing
+        
         msg = 'DONE'
         sock.sendall(msg.encode())
         print('[ATM Client] Message Sent')
@@ -31,7 +22,40 @@ class ATM:
                 else:
                     print('[ATM Client] Message Received')
                     break
-        finally: sock.close()
+        finally: return successful
+
+    def sendRequests(self, msg, sock): pass # <--- TODO
+
+    def run(self, user_name):
+        # Establish listening from port
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('localhost', 11111)
+        print('[ATM Client] Connecting To:', server_address[0], "Port:", server_address[1])
+        sock.connect(server_address)
+
+        # HandShake Protocol should happen here
+        successful = self.SSLHandShake(user_name, sock)
+
+        if successful:
+            # Banking Operations    
+            # withdraw, deposit, check balance
+            # Key:
+            # w: 1,000 -> withdraw
+            # d: 1,000 -> deposit
+            # cb -> check balance
+            # E -> Exit
+            print('[ATM Client] Connection Accepted to Banking Server')
+            while (True):
+                req = input('[ATM Client] Enter Banking Operation: ')
+                if req == "E": break
+                self.sendRequests(req, sock)
+        else:
+            sock.close()
+            print('[ATM Client] Handshake Protocol Failed. Exiting...')
+            return
+        sock.close()
+        print('[ATM Client] Banking Operations Successful. Exiting...')
+
 
     def startATM(self):
         print('[ATM Client] Started...')
@@ -44,18 +68,15 @@ class ATM:
             else:
                 print('[ATM Client] Connecting to Banking Server...')
 
-                pwd = input('[ATM Client] Enter Your Password: ')
-
-                # Handshake Protocol
-                self.establishConnection(login)
-
-                # withdraw, deposit, check balance
-                self.sendRequests()
+                # Handshake Protocol + Banking Operations
+                self.run(login)
+                return
 
 
 def startup():
     client = ATM()
     client.startATM()
+    print('[ATM Client] Shutting Down...')
 
 if __name__ == '__main__': startup()
 

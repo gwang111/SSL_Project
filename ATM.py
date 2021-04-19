@@ -4,17 +4,21 @@ import socket
 class ATM: 
     def __init__(self): pass
 
-    def start(self): pass
+    def SSLHandShake(self): pass # <--- TODO
 
-    def SSLHandShake(self): pass
+    def sendRequests(self): pass # <--- TODO
 
-    def establishConnection(self, user_name, pwd):
+    def establishConnection(self, user_name):
         # Establish listening from port
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('localhost', 10000)
         print('[ATM Client] Connecting To:', server_address[0], "Port:", server_address[1])
         sock.connect(server_address)
 
+        # HandShake Protocol should happen here
+        self.SSLHandShake()
+
+        # Below is just palaceholder code to confirm working message passing
         msg = 'DONE'
         sock.sendall(msg.encode())
         print('[ATM Client] Message Sent')
@@ -41,7 +45,13 @@ class ATM:
                 print('[ATM Client] Connecting to Banking Server...')
 
                 pwd = input('[ATM Client] Enter Your Password: ')
-                self.establishConnection(login, pwd)
+
+                # Handshake Protocol
+                self.establishConnection(login)
+
+                # withdraw, deposit, check balance
+                self.sendRequests()
+
 
 def startup():
     client = ATM()

@@ -17,15 +17,17 @@ class Account:
 
 class Bank:
     def __init__(self) :
-        self.data_base = [Account('Aayush', '1100011110', 'Sriram', 100000), 
-                          Account('Aidan', '1101010111', 'Duane', 1000), 
-                          Account('Gary', '1100010010', 'Wang', 100)]
+        self.data_base = [Account('Aayush', '1100011110', 100000), 
+                          Account('Aidan', '1101010111', 1000), 
+                          Account('Gary', '1100010010', 100)]
 
 class BankingServer:
     def __init__(self):
         self.bank = Bank()
 
-    def SSLHandShake(self): pass
+    def SSLHandShake(self): pass # <--- TODO
+
+    def processRequests(self): pass # <--- TODO
 
     def openingServer(self): 
         # Establish listening from port
@@ -37,6 +39,11 @@ class BankingServer:
         
         # Wait for ATM To Connect
         while (True):
+
+            # HandShake Protocol should happen here
+            self.SSLHandShake() 
+
+            # Below is just palaceholder code to confirm working message passing
             msg = ''
 
             print('[Banking Server] Waiting For Connection From ATM...')
@@ -56,6 +63,9 @@ class BankingServer:
             finally: connection.close()
             
             if (msg == 'DONE'): break
+
+        # withdraw, deposit, check balance
+        self.processRequests()
 
 def startingUp():
     server = BankingServer()

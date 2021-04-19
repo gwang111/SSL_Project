@@ -2,9 +2,8 @@ import sys
 import socket
 
 class Account:
-    def __init__(self, name, pwd, publicKey, balance):
+    def __init__(self, name, publicKey, balance):
         self.name = name
-        self.pwd = pwd
         self.publicKey = publicKey
         self.balance = balance
     

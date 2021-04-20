@@ -7,9 +7,24 @@ import SHA1
 
 pubKey = None
 
+def recvMsg(connection):
+    msg = ''
+    try:
+        while (True):
+            chunk = connection.recv(1024)
+            delim = chunk.decode().split()
+            if delim[len(delim) - 1] != "End": msg += ' '.join(delim)
+            else:
+                msg += ' '.join(delim[:-1]) 
+                break
+    finally: return msg
+
+def sendMsg(connection, msg):
+    send_msg = msg + " End"
+    connection.sendall(send_msg.encode()) 
+
 class Account:
-    def __init__(self, name, balance):
-        self.name = name
+    def __init__(self, balance):
         self.balance = balance
 
     def deposit(self, amount): self.balance += amount
@@ -17,11 +32,11 @@ class Account:
     def withdraw(self, amount):
         if self.balance - amount >= 0: self.balance -= amount
 
-    def checkBalance(self): print("[Banking Server] Account Balance For", self.name, "is", self.balance)
+    def checkBalance(self): print("[Banking Server] Account Balance For Aayush is:", self.balance, "USD")
 
 class Bank:
     def __init__(self) :
-        self.data_base = Account('Aayush', 100000)
+        self.aayush_account = Account(1000000)
 
 class BankingServer:
     def __init__(self):
@@ -36,30 +51,59 @@ class BankingServer:
         print('[Banking Server] Waiting For Connection From ATM...')
         connection, client_address = sock.accept()   
         
-        try:
-            while (True):
-                chunk = connection.recv(1024)
-                if (chunk and chunk.decode() != 'DONE'): msg += chunk.decode()
-                else: 
-                    print('[Banking Server] Message Received')
-                    send = '[From Banking Server] Received'
-                    connection.sendall(send.encode())
-                    connection.sendall('DONE'.encode())
-                    msg = 'DONE'
-                    break
-        finally: return (successful, connection, sock)
-
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
         # Phase 1
-
+        ret = recvMsg(connection)
+        sendMsg(connection, 'Phase 1')
+        print("[Banking Server] Passed Phase 1")
         # Phase 2
-
+        ret = recvMsg(connection)
+        sendMsg(connection, 'Phase 2')
+        print("[Banking Server] Passed Phase 2")
         # Phase 3
-
+        ret = recvMsg(connection)
+        sendMsg(connection, 'Phase 3')
+        print("[Banking Server] Passed Phase 3")
         # Phase 4
+        ret = recvMsg(connection)
+        sendMsg(connection, 'Phase 4')
+        print("[Banking Server] Passed Phase 4")
 
-    def processRequests(self, sock): pass # <--- TODO
+        return successful, connection
+
+    def processRequests(self, connection): # <--- TODO
         # receive encrypted banking operations from ATM
+        while (True):
+            msg = recvMsg(connection)
+            if msg == "Exit": break
+
+            msg = msg.lower()
+            msg = msg.split()    
+
+            if msg[0] == 'w:': 
+                print("[Banking Server] Processing Operation: " + ' '.join(msg))
+                money = 0
+                try:
+                    money = int(msg[1])
+                except:
+                    print("[Banking Server] Invalid Amount")
+                    continue
+                self.bank.aayush_account.withdraw(int(msg[1]))
+            elif msg[0] == 'd:': 
+                print("[Banking Server] Processing Operation: " + ' '.join(msg))
+                money = 0
+                try:
+                    money = int(msg[1])
+                except:
+                    print("[Banking Server] Invalid Amount")
+                    continue                
+                self.bank.aayush_account.deposit(int(msg[1]))
+            elif msg[0] == 'cb': 
+                print("[Banking Server] Processing Operation: " + msg[0])
+                self.bank.aayush_account.checkBalance()
+            elif msg[0] == 'e': break
+            else: print("[Banking Server] Processing Operation Invalid")
+
 
     def openingServer(self): 
         # Establish listening from port
@@ -71,17 +115,16 @@ class BankingServer:
         sock.listen(1)
 
         # HandShake Protocol should happen here
-        successful, connection, sock = self.SSLHandShake(sock) 
+        successful, connection = self.SSLHandShake(sock) 
 
         if successful:
-            self.processRequests(sock)
+            print('[Banking Server] Handshake Protocol Success. Accepting Banking Operations')
+            self.processRequests(connection)
         else:
             connection.close()
-            sock.close()
             print('[Banking Server] Handshake Protocol Failed. Exiting...')
             return
         connection.close()
-        sock.close()
         print('[Banking Server] Banking Operations Successful. Exiting...')
 
 

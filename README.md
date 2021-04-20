@@ -18,7 +18,7 @@
 #### E -> Exit
 
 ## How To Call Crypto Algos
-#### DES
+#### DES (If its cleaner, we can use BG.py which has a straight forward encrypt() decrypt())
 ```python
 # Given binary msg: bin_msg, msg: "Crypto"
 # split into 8 bit chunks

@@ -1,14 +1,17 @@
 import sys
 import socket
-import BG as BG
-import DES as DES
+import BG
+import DES
+import RSA
+import SHA1
+
+pubKey = None
 
 class Account:
-    def __init__(self, name, publicKey, balance):
+    def __init__(self, name, balance):
         self.name = name
-        self.publicKey = publicKey
         self.balance = balance
-    
+
     def deposit(self, amount): self.balance += amount
 
     def withdraw(self, amount):
@@ -18,15 +21,14 @@ class Account:
 
 class Bank:
     def __init__(self) :
-        self.data_base = [Account('Aayush', '1100011110', 100000), 
-                          Account('Aidan', '1101010111', 1000), 
-                          Account('Gary', '1100010010', 100)]
+        self.data_base = Account('Aayush', 100000)
 
 class BankingServer:
     def __init__(self):
         self.bank = Bank()
 
     def SSLHandShake(self, sock):
+
         # Below is just palaceholder code to confirm working message passing
         msg = ''
         successful = True
@@ -47,7 +49,17 @@ class BankingServer:
                     break
         finally: return (successful, connection, sock)
 
+        # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
+        # Phase 1
+
+        # Phase 2
+
+        # Phase 3
+
+        # Phase 4
+
     def processRequests(self, sock): pass # <--- TODO
+        # receive encrypted banking operations from ATM
 
     def openingServer(self): 
         # Establish listening from port

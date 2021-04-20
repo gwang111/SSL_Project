@@ -1,7 +1,25 @@
 import sys
 import socket
-import BG as BG
-import DES as DES
+import BG
+import DES
+import RSA
+import SHA1
+
+pubKey = None
+privKey = None
+
+def recvMsg(sock):
+    msg = ''
+    try:
+        while (True):
+            chunk = sock.recv(1024)
+            if (chunk and chunk.decode() != 'DONE'): msg += chunk.decode()
+            else: break
+    finally: return msg
+
+def sendMsg(sock, msg):
+    sock.sendall(msg.encode())
+    sock.sendall('DONE'.encode())    
 
 class ATM: 
     def __init__(self): pass
@@ -24,7 +42,17 @@ class ATM:
                     break
         finally: return successful
 
+        # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
+        # Phase 1
+
+        # Phase 2
+
+        # Phase 3
+
+        # Phase 4
+
     def sendRequests(self, msg, sock): pass # <--- TODO
+        # send encrypted banking operations to server
 
     def run(self, user_name):
         # Establish listening from port

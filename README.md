@@ -5,7 +5,6 @@
 #### - Open two Linux Terminals
 #### - In Terminal 2: python3 BankingServer.py
 #### - In Terminal 1: python3 ATM.py
-#### - For USER_NAME, use Aayush
 #### - SSL HandShake Protocol Occurs
 #### - Then you will be able to send banking operations to BankingServer
 

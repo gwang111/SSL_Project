@@ -14,7 +14,7 @@
 #### cb -> check balance
 
 ## General Operations
-#### E -> Exit
+#### e -> Exit
 
 ## How To Call Crypto Algos
 #### DES (If its cleaner, we can use BG.py which has a straight forward encrypt() decrypt())

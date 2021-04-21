@@ -62,6 +62,7 @@ class BankingServer:
         pub_key = join(e,n,' ')
 
         ret = recvMsg(connection)
+        dec = RSA.decrypt(ret,d,n)
         sendMsg(connection, pub_key)
         print("[Banking Server] Passed Phase 2")
         # Phase 3

@@ -62,7 +62,7 @@ class BankingServer:
 
 
         ret = recvMsg(connection)
-        sendMsg(connection, e)
+        sendMsg(connection, (e,n))
         print("[Banking Server] Passed Phase 2")
         # Phase 3
         ret = recvMsg(connection)

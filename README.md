@@ -1,10 +1,10 @@
 ## SSL PROJECT
-#### By Aayush, Aidan, Gary
+#### By Aayush, Gary, Aidan
 
 ## How To Run:
 1. Open two Linux Terminals
-2. In Terminal 2: python3 BankingServer.py
-3. In Terminal 1: python3 ATM.py
+2. In Terminal 1: python3 BankingServer.py
+3. In Terminal 2: python3 ATM.py
 
 After the SSL Handshake finishes, you will be able to communicate with BankingServer.
 

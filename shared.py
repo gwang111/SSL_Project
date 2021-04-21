@@ -1,6 +1,6 @@
 import sys
 import socket
-# TO DO: implement AES-256 (CBC mode)
+# TO DO: implement AES-256 (CBC mode), maybe a digital signature added as well?
 
 # receive a message - ONLY FOR SSL HANDSHAKE
 def recvMsg(sock):
@@ -19,12 +19,17 @@ def recvMsg(sock):
 def sendMsg(sock, msg):
 	send_msg = msg + " End"
 	sock.sendall(send_msg.encode())
+# it is very unlikely that a cipher would produce "InitVec:" or
+# "MACTag:", so these can be used for splitting a msg into text, i.v., and tag.
 # send an encrypted message
 def sendEncrypted(sock, msg, key):
 	# AES.encrypt(msg, key)
+	# msg += "InitVec:<vector>MACtag:<tag>"
 	sendMsg(sock, msg)
 # receive a decrypted message
-def recvDecrypted(sock, key):
+def recvEncrypted(sock, key):
 	msg = recvMsg(sock)
+	# msg, info = msg.split("InitVec:")
+	# IV, tag = info.split("MACtag:")
 	# AES.decrypt(msg, key)
 	return msg

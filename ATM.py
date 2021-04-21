@@ -2,11 +2,11 @@ import sys
 import socket
 import DES
 import RSA
-from shared import sendMsg, recvMsg
+from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
 class ATM:
 	def __init__(self):
-		self.secretKey = '101010101001010011'
+		self.__secretKey = '101010101001010011'
 
 	def SSLHandShake(self, sock):
 		# TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
@@ -26,7 +26,7 @@ class ATM:
 		# Phase 3 - client sends the shared secret key encrypted with the public RSA key.
 		
 		e, n = int(e), int(n)
-		cipher = RSA.encrypt(self.secretKey, e,n)
+		cipher = RSA.encrypt(self.__secretKey, e,n)
 		# convert the RSA cipher into a string, then send it.
 		cipher = map(str, cipher)
 		cipher = ' '.join(cipher)
@@ -37,13 +37,10 @@ class ATM:
 		
 		# Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 
-		# encrypt this message with AES before sending it.
-		finish = 'clientPhase4'
-		finish_encrypted = finish
-
-		sendMsg(sock, finish_encrypted)
-		msg = recvMsg(sock)
-		# decrypt with AES.
+		# client -> server
+		sendEncrypted(sock, 'clientPhase4', self.__secretKey)
+		# server -> client
+		msg = recvEncrypted(sock, self.__secretKey)
 
 		if msg != 'serverPhase4':
 			print('That is not the server!')

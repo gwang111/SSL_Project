@@ -2,7 +2,7 @@ import sys
 import socket
 import DES
 import RSA
-from shared import sendMsg, recvMsg
+from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
 class Account:
 	def __init__(self, balance):
@@ -32,7 +32,7 @@ class BankingServer:
 		self.bank = Bank()
 		# the secret key is shared - helps confirm that the client is who they say they are
 		# IRL, this would probably be some hash keyed to a user/password login
-		self.secretKey = '101010101001010011'
+		self.__secretKey = '101010101001010011'
 
 	def SSLHandShake(self, sock):
 		print('[Banking Server] Waiting For Connection From ATM...')
@@ -55,26 +55,26 @@ class BankingServer:
 		ret = ret.split()
 		ret = map(int, ret)
 
-		# we have received the secret key.
-		self.secretKey = RSA.decrypt(ret,d,n)
+		# check if the received key is the same as the shared secret key
+		tempKey = RSA.decrypt(ret,d,n)
+		if tempKey != self.__secretKey:
+			print('[Banking Server] Invalid User!')
+			return False, connection
 
-		sendMsg(connection, 'Gotkey')
+		sendMsg(connection, 'KeyAck')
 		print("[Banking Server] Passed Phase 3")
 
 		# Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 		# client sends it first.
-		plainTxt = recvMsg(connection)
-
-		# decrypt with AES.
+		plainTxt = recvEncrypted(connection, self.__secretKey)
 
 		# if the client's finish message is not "clientPhase4", that is not the client.
 		if plainTxt != "clientPhase4":
-			print('Invalid User!')
+			print('[Banking Server] Invalid User!')
 			return False, connection
 
-		# encrypt with AES.
-
-		sendMsg(connection, 'serverPhase4')
+		# send a finish message back encrypted with the shared secret key.
+		sendEncrypted(connection, 'serverPhase4', self.__secretKey)
 
 		print("[Banking Server] Passed Phase 4")
 
@@ -97,13 +97,14 @@ class BankingServer:
 				break
 			# terminate the connection
 			elif msg == 'e':
+				print("[ATM Client] Sent Command: " + msg)
 				print('[Banking Server] Banking Operations Successful. Exiting...')
 				break
 			else:
-				print("[Banking Server] Processing Operation: " + msg)
+				print("[ATM Client] Sent Command: " + msg)
 
 				# defaults to a faulty command
-				resp = "Error: Invalid Operation"
+				resp = "Error: Invalid Command"
 				# withdraw:
 				if tokens[0] == 'w:':
 					money = 0

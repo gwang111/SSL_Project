@@ -30,7 +30,9 @@ class Bank:
 class BankingServer:
 	def __init__(self):
 		self.bank = Bank()
-		self.secretKey = None
+		# the secret key is shared - helps confirm that the client is who they say they are
+		# IRL, this would probably be some hash keyed to a user/password login
+		self.secretKey = '101010101001010011'
 
 	def SSLHandShake(self, sock):
 		print('[Banking Server] Waiting For Connection From ATM...')

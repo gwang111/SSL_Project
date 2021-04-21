@@ -42,7 +42,7 @@ class ATM:
         print("[ATM Client] Passed Phase 2")
         # Phase 3
 
-        cypher = RSA('This is a A', e,n )
+        cypher = RSA.encrypt('This is a A', e,n )
 
 
         sendMsg(sock, cypher)

@@ -35,16 +35,13 @@ class BankingServer:
 	def SSLHandShake(self, sock):
 		print('[Banking Server] Waiting For Connection From ATM...')
 		connection, client_address = sock.accept()
-		
-		# TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
+
 		# Phase 1 - server receives an initial message from a client
-		
 		ret = recvMsg(connection)
 		sendMsg(connection, 'Hello_back')
 		print("[Banking Server] Passed Phase 1")
 		
 		# Phase 2 - server sends a public RSA key to the client
-
 		e,n,d,p = RSA.generateKeys()
 		pub_key = (str(e) + ' ' + str(n))
 		ret = recvMsg(connection)
@@ -52,7 +49,6 @@ class BankingServer:
 		print("[Banking Server] Passed Phase 2")
 
 		# Phase 3 - server receives the shared secret key encrypted with the public key
-	
 		ret = recvMsg(connection)
 		ret = ret.split()
 		ret = map(int, ret)
@@ -62,8 +58,8 @@ class BankingServer:
 
 		sendMsg(connection, 'Gotkey')
 		print("[Banking Server] Passed Phase 3")
-		# Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 
+		# Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 		# client sends it first.
 		plainTxt = recvMsg(connection)
 
@@ -104,8 +100,8 @@ class BankingServer:
 			else:
 				print("[Banking Server] Processing Operation: " + msg)
 
-				# faulty command
-				resp = "Operation Invalid"
+				# defaults to a faulty command
+				resp = "Error: Invalid Operation"
 				# withdraw:
 				if tokens[0] == 'w:':
 					money = 0
@@ -119,8 +115,7 @@ class BankingServer:
 						if success:
 							resp = "Transaction Successful"
 						else:
-							resp = "Invalid Transaction"
-
+							resp = "Error: Invalid Transaction"
 				# deposit:
 				elif tokens[0] == 'd:': 
 					money = 0
@@ -134,16 +129,15 @@ class BankingServer:
 						if success:
 							resp = "Transaction Successful"
 						else:
-							resp = "Invalid Transaction"
-
+							resp = "Error: Invalid Transaction"
 				# check account balance
 				elif tokens[0] == 'cb':
 					resp = self.bank.account.checkBalance()
-				if resp != "Invalid Operation":
-					print("[Banking Server] Successul Command")
+				# print whether or not the command was successful and send a response back to the client
+				if resp[:7] != "Error: ":
+					print("[Banking Server] Successful Command")
 				else:
 					print("[Banking Server] Failed Command")
-				# send the response back to the client
 				sendMsg(connection, resp)
 
 

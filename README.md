@@ -2,19 +2,19 @@
 #### By Aayush, Aidan, Gary
 
 ## How To Run:
-#### - Open two Linux Terminals
-#### - In Terminal 2: python3 BankingServer.py
-#### - In Terminal 1: python3 ATM.py
-#### - SSL HandShake Protocol Occurs
-#### - Then you will be able to send banking operations to BankingServer
+1. Open two Linux Terminals
+2. In Terminal 2: python3 BankingServer.py
+3. In Terminal 1: python3 ATM.py
+
+After the SSL Handshake finishes, you will be able to communicate with BankingServer.
 
 ## Banking Operations
-#### w: 1,000 -> withdraw
-#### d: 1,000 -> deposit
-#### cb -> check balance
+w: 1000 -> withdraw $1000<br>
+d: 1000 -> deposit $1000<br>
+cb -> check balance
 
 ## General Operations
-#### e -> Exit
+e -> Exit
 
 ## How To Call Crypto Algos
 #### DES (If its cleaner, we can use BG.py which has a straight forward encrypt() decrypt())

@@ -84,8 +84,8 @@ class BankingServer:
 	def processRequests(self, connection): # <--- TODO
 		# receive encrypted banking operations from ATM
 		while (True):
-			# initial message - rcvEncrypted?
-			msg = recvMsg(connection)
+			# initial message
+			msg = recvEncrypted(connection, self.__secretKey)
 
 			# every message should be in the format "<command> <values>"
 			msg = msg.lower()
@@ -141,7 +141,7 @@ class BankingServer:
 					print("[Banking Server] Successful Command")
 				else:
 					print("[Banking Server] Failed Command")
-				sendMsg(connection, resp)
+				sendEncrypted(connection, resp, self.__secretKey)
 
 
 	def openingServer(self): 

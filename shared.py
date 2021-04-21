@@ -31,5 +31,5 @@ def recvEncrypted(sock, key):
 	msg = recvMsg(sock)
 	# msg, info = msg.split("InitVec:")
 	# IV, tag = info.split("MACtag:")
-	# AES.decrypt(msg, key)
+	# decrypted = AES.decrypt(msg, key, IV)
 	return msg

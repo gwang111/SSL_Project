@@ -70,13 +70,12 @@ class ATM:
 			print('[ATM Client] Handshake Protocol Succeeded. Connection Accepted to Banking Server')
 			while (True):
 				req = input('[ATM Client] Enter Banking Operation: ')
-				# this should be sendEncrypted
-				sendMsg(sock, req)
+				sendEncrypted(sock, req, self.__secretKey)
 				# terminate the connection - don't bother waiting for a response
 				if req == "e":
 					break
 				else:
-					print('[Banking Server]', recvMsg(sock))
+					print('[Banking Server]', recvEncrypted(sock, self.__secretKey))
 		else:
 			sock.close()
 			print('[ATM Client] Handshake Protocol Failed. Denied Connection...')

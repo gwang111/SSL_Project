@@ -38,6 +38,7 @@ class ATM:
         # Phase 2
         sendMsg(sock, "Phase 2")
         ret = recvMsg(sock)
+        e,n = ret.split()
         print("[ATM Client] Passed Phase 2")
         # Phase 3
         sendMsg(sock, "Phase 3")

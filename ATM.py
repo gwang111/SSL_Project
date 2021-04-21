@@ -41,7 +41,11 @@ class ATM:
         e,n = ret.split()
         print("[ATM Client] Passed Phase 2")
         # Phase 3
-        sendMsg(sock, "Phase 3")
+
+        cypher = RSA('This is a A', e,n )
+
+
+        sendMsg(sock, cypher)
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 3")
         # Phase 4

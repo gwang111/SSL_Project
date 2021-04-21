@@ -58,8 +58,11 @@ class BankingServer:
         sendMsg(connection, 'Hello_back')
         print("[Banking Server] Passed Phase 1")
         # Phase 2
+        e,n,d,_ = RSA.genkey()
+
+
         ret = recvMsg(connection)
-        sendMsg(connection, 'Phase 2')
+        sendMsg(connection, e)
         print("[Banking Server] Passed Phase 2")
         # Phase 3
         ret = recvMsg(connection)

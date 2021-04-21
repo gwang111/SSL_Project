@@ -19,8 +19,8 @@ def recvMsg(sock):
 def sendMsg(sock, msg):
 	send_msg = msg + " End"
 	sock.sendall(send_msg.encode())
-# it is very unlikely that a cipher would produce "InitVec:" or
-# "MACTag:", so these can be used for splitting a msg into text, i.v., and tag.
+# it is very unlikely that a cipher would produce "InitVec:" or "MACTag:",
+# so these can be used for splitting a msg into text, i.v., and tag.
 # send an encrypted message
 def sendEncrypted(sock, msg, key):
 	# AES.encrypt(msg, key)

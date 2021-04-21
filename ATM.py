@@ -49,7 +49,10 @@ class ATM:
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 3")
         # Phase 4
-        sendMsg(sock, "Phase 4")
+
+
+        next_msg = RSA.encrypt('Phase4','THISISKEY',n)
+        sendMsg(sock, next_msg)
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 4")
 

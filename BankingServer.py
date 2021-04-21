@@ -5,7 +5,7 @@ import DES
 import RSA
 import SHA1
 
-secretKey = '1100011110'
+secretKey = None
 
 def recvMsg(connection):
     msg = ''
@@ -54,25 +54,27 @@ class BankingServer:
         
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
         # Phase 1
+        
         ret = recvMsg(connection)
         sendMsg(connection, 'Hello_back')
         print("[Banking Server] Passed Phase 1")
+        
         # Phase 2
+
         e,n,d,p = RSA.generateKeys()
         pub_key = (str(e) + ' ' + str(n))
         ret = recvMsg(connection)
-        print(pub_key)
         sendMsg(connection, pub_key)
         print("[Banking Server] Passed Phase 2")
+
         # Phase 3
     
         ret = recvMsg(connection)
-
         ret = ret.split()
         ret = map(int, ret)
 
-        dec_key = RSA.decrypt(ret,d,n)
-        
+        secretKey = RSA.decrypt(ret,d,n)
+
         sendMsg(connection, 'Gotkey')
         print("[Banking Server] Passed Phase 3")
         # Phase 4
@@ -85,8 +87,6 @@ class BankingServer:
         while len(encrypt_txt) != 0:
             plainTxt += DES.twoRoundDES(encrypt_txt[:8], [key_set[1], key_set[0]])
             encrypt_txt = encrypt_txt[8:]
-        print(plainTxt)
-
 
         sendMsg(connection, 'Phase 4')
         print("[Banking Server] Passed Phase 4")

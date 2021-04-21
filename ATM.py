@@ -31,16 +31,20 @@ class ATM:
 
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
         # Phase 1
+        
         sendMsg(sock, "Hello")
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 1")
+        
         # Phase 2
+        
         sendMsg(sock, "Phase 2")
         ret = recvMsg(sock)
-        print(ret)
         e,n = ret.split()
         print("[ATM Client] Passed Phase 2")
+        
         # Phase 3
+        
         e, n = int(e), int(n)
         cypher = RSA.encrypt(secretKey, e,n)
 
@@ -50,6 +54,7 @@ class ATM:
         sendMsg(sock, cypher)
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 3")
+        
         # Phase 4
 
         next_msg = 'clientPhase4'

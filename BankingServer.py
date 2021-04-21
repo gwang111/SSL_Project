@@ -48,13 +48,14 @@ class BankingServer:
         msg = ''
         successful = True
 
+
         print('[Banking Server] Waiting For Connection From ATM...')
         connection, client_address = sock.accept()   
         
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
         # Phase 1
         ret = recvMsg(connection)
-        sendMsg(connection, 'Phase 1')
+        sendMsg(connection, 'Hello_back')
         print("[Banking Server] Passed Phase 1")
         # Phase 2
         ret = recvMsg(connection)

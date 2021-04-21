@@ -5,8 +5,7 @@ import DES
 import RSA
 import SHA1
 
-pubKey = None
-privKey = None
+secretKey = '1100011110'
 
 def recvMsg(sock):
     msg = ''
@@ -43,7 +42,7 @@ class ATM:
         print("[ATM Client] Passed Phase 2")
         # Phase 3
         e, n = int(e), int(n)
-        cypher = RSA.encrypt('THISISKEY', e,n)
+        cypher = RSA.encrypt(secretKey, e,n)
 
         cypher = map(str, cypher)
         cypher = ' '.join(cypher)
@@ -53,8 +52,18 @@ class ATM:
         print("[ATM Client] Passed Phase 3")
         # Phase 4
 
-        next_msg = RSA.encrypt('clientPhase4','THISISKEY',n)
-        sendMsg(sock, next_msg)
+        next_msg = 'clientPhase4'
+        keySet = DES.KeyGen(secretKey)
+        binMsg = DES.toBinary(DES.toHex(next_msg))
+
+        toChunk = binMsg
+        encrypt_msg = ''
+
+        while len(toChunk) != 0:
+            encrypt_msg += DES.twoRoundDES(toChunk[:8], keySet)
+            toChunk = toChunk[8:]
+
+        sendMsg(sock, encrypt_msg)
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 4")
 

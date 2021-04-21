@@ -59,10 +59,10 @@ class BankingServer:
         print("[Banking Server] Passed Phase 1")
         # Phase 2
         e,n,d,_ = RSA.generateKeys()
-
+        pub_key = join(e,n,' ')
 
         ret = recvMsg(connection)
-        sendMsg(connection, (e,n))
+        sendMsg(connection, )
         print("[Banking Server] Passed Phase 2")
         # Phase 3
         ret = recvMsg(connection)

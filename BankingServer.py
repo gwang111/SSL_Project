@@ -68,8 +68,11 @@ class BankingServer:
         # Phase 3
     
         ret = recvMsg(connection)
-        dec = RSA.decrypt(ret,d,n)
+        dec_key = RSA.decrypt(ret,d,n)
         sendMsg(connection, 'Phase 3')
+
+        
+
         print("[Banking Server] Passed Phase 3")
         # Phase 4
         ret = recvMsg(connection)

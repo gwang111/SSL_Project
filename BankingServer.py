@@ -80,18 +80,12 @@ class BankingServer:
         ret = recvMsg(connection)
         encrypt_txt = ret
 
-        print(encrypt_txt)
-        print(len(encrypt_txt))
-
         plainTxt = ''
         key_set = DES.KeyGen(secretKey)
         while len(encrypt_txt) != 0:
-            plainTxt += DES.twoRoundDES(encrypt_txt[:8], [key_set[1], key_set[2]])
+            plainTxt += DES.twoRoundDES(encrypt_txt[:8], [key_set[1], key_set[0]])
             encrypt_txt = encrypt_txt[8:]
-
-
-        # if(RSA.decrypt(ret,dec_key,n) == 'clientPhase4'):
-        #     print('Success')
+        print(plainTxt)
 
 
         sendMsg(connection, 'Phase 4')

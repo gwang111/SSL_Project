@@ -59,10 +59,9 @@ class BankingServer:
         print("[Banking Server] Passed Phase 1")
         # Phase 2
         e,n,d,p = RSA.generateKeys()
-        pub_key = (e + ' ' + n)
-
+        pub_key = (str(e) + ' ' + str(n))
         ret = recvMsg(connection)
-
+        print(pub_key)
         sendMsg(connection, pub_key)
         print("[Banking Server] Passed Phase 2")
         # Phase 3
@@ -73,8 +72,6 @@ class BankingServer:
         print("[Banking Server] Passed Phase 3")
         # Phase 4
         ret = recvMsg(connection)
-
-
 
         if(RSA.decrypt(ret,dec_key,n) == 'clientPhase4'):
             print('Success')

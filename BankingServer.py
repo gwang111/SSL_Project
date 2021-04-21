@@ -67,11 +67,19 @@ class BankingServer:
         # Phase 3
     
         ret = recvMsg(connection)
+
+        ret = ret.split()
+        ret = map(int, ret)
+
         dec_key = RSA.decrypt(ret,d,n)
         sendMsg(connection, 'Gotkey')
         print("[Banking Server] Passed Phase 3")
         # Phase 4
+
         ret = recvMsg(connection)
+
+        ret = ret.split()
+        ret = map(int, ret)
 
         if(RSA.decrypt(ret,dec_key,n) == 'clientPhase4'):
             print('Success')

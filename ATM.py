@@ -43,13 +43,15 @@ class ATM:
         print("[ATM Client] Passed Phase 2")
         # Phase 3
         e, n = int(e), int(n)
-        cypher = RSA.encrypt('THISISKEY', e,n )
+        cypher = RSA.encrypt('THISISKEY', e,n)
+
+        cypher = map(str, cypher)
+        cypher = ' '.join(cypher)
 
         sendMsg(sock, cypher)
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 3")
         # Phase 4
-
 
         next_msg = RSA.encrypt('clientPhase4','THISISKEY',n)
         sendMsg(sock, next_msg)

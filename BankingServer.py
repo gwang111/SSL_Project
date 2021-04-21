@@ -62,7 +62,7 @@ class BankingServer:
         pub_key = join(e,n,' ')
 
         ret = recvMsg(connection)
-        sendMsg(connection, )
+        sendMsg(connection, pub_key)
         print("[Banking Server] Passed Phase 2")
         # Phase 3
         ret = recvMsg(connection)

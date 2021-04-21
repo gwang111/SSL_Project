@@ -32,7 +32,7 @@ class ATM:
 
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
         # Phase 1
-        sendMsg(sock, "Phase 1")
+        sendMsg(sock, "Hello")
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 1")
         # Phase 2

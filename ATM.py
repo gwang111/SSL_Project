@@ -1,53 +1,33 @@
 import sys
 import socket
-import BG
 import DES
 import RSA
-import SHA1
+from shared import sendMsg, recvMsg
 
-secretKey = '1100011110'
-
-def recvMsg(sock):
-    msg = ''
-    try:
-        while (True):
-            chunk = sock.recv(1024)
-            delim = chunk.decode().split()
-            if delim[len(delim) - 1] != "End": msg += ' '.join(delim)
-            else: 
-                msg += ' '.join(delim[:-1])
-                break
-    finally: return msg
-
-def sendMsg(sock, msg):
-    send_msg = msg + " End"
-    sock.sendall(send_msg.encode())
-
-class ATM: 
-    def __init__(self): pass
+class ATM:
+    def __init__(self):
+        self.secretKey = '1100011110'
 
     def SSLHandShake(self, sock):
-        successful = True
-
         # TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
-        # Phase 1
+        # Phase 1 - client sends an initial message.
         
         sendMsg(sock, "Hello")
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 1")
         
-        # Phase 2
+        # Phase 2 - client is acknowledged and receives a public RSA key from the server.
         
         sendMsg(sock, "Phase 2")
         ret = recvMsg(sock)
         e,n = ret.split()
         print("[ATM Client] Passed Phase 2")
         
-        # Phase 3
+        # Phase 3 - client sends the shared secret key encrypted with the public RSA key.
         
         e, n = int(e), int(n)
-        cypher = RSA.encrypt(secretKey, e,n)
-
+        cypher = RSA.encrypt(self.secretKey, e,n)
+        # convert the RSA cypher into a string, then send it.
         cypher = map(str, cypher)
         cypher = ' '.join(cypher)
 
@@ -55,40 +35,38 @@ class ATM:
         ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 3")
         
-        # Phase 4
+        # Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 
-        next_msg = 'clientPhase4'
-        keySet = DES.KeyGen(secretKey)
-        binMsg = DES.toBinary(DES.toHex(next_msg))
+        # encrypt this message with AES before sending it.
+        finish = 'clientPhase4'
+        finish_encrypted = finish
 
-        toChunk = binMsg
-        encrypt_msg = ''
+        sendMsg(sock, finish_encrypted)
+        msg = recvMsg(sock)
+        # decrypt with AES.
 
-        while len(toChunk) != 0:
-            encrypt_msg += DES.twoRoundDES(toChunk[:8], keySet)
-            toChunk = toChunk[8:]
+        if msg != 'serverPhase4':
+            print('That is not the server!')
+            return False
 
-        sendMsg(sock, encrypt_msg)
-        ret = recvMsg(sock)
         print("[ATM Client] Passed Phase 4")
+        return True
 
-        return successful
-
-    def sendRequests(self, msg, sock): pass # <--- TODO
+    def sendEncrypted(self, msg, sock): pass # <--- TODO
         # send encrypted banking operations to server
 
     def run(self):
-        # Establish listening from port
+        # Connect to a server
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('localhost', 11111)
         print('[ATM Client] Connecting To:', server_address[0], "Port:", server_address[1])
         sock.connect(server_address)
 
-        # HandShake Protocol should happen here
+        # perform an SSL Handshake with the server
         successful = self.SSLHandShake(sock)
 
         if successful:
-            # Banking Operations    
+            # Banking Operations
             # withdraw, deposit, check balance
             # Key:
             # w: 1000 -> withdraw
@@ -98,10 +76,13 @@ class ATM:
             print('[ATM Client] Handshake Protocol Succeeded. Connection Accepted to Banking Server')
             while (True):
                 req = input('[ATM Client] Enter Banking Operation: ')
-                if req == "e": 
-                    sendMsg(sock, req)
-                    break
+                # this should be sendEncrypted
                 sendMsg(sock, req)
+                # terminate the connection - don't bother waiting for a response
+                if req == "e":
+                    break
+                else:
+                    print('[Banking Server]', recvMsg(sock))
         else:
             sock.close()
             print('[ATM Client] Handshake Protocol Failed. Denied Connection...')

@@ -1,6 +1,8 @@
 ## SSL PROJECT
 #### By Aayush, Gary, Aidan
 
+![alt text](https://github.com/gwang111/SSL_Project/blob/master/visualization.png)
+
 ## How To Run:
 1. Open two Linux Terminals
 2. In Terminal 1: python3 BankingServer.py

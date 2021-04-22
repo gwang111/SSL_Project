@@ -40,7 +40,10 @@ class BankingServer:
 
 		# Phase 1 - server receives an initial message from a client
 		ret = recvMsg(connection)
-		sendMsg(connection, 'Hello_back')
+		if not ret == 'Hello There.':
+			print('[Banking Server] Failed Phase 1!')
+			return False, connection
+		sendMsg(connection, 'G E N E R A L   K E N O B I !')
 		print("[Banking Server] Passed Phase 1")
 		
 		# Phase 2 - server sends a public RSA key to the client

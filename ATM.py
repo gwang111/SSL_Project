@@ -13,13 +13,16 @@ class ATM:
 		# TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?
 		# Phase 1 - client sends an initial message.
 		
-		sendMsg(sock, "Hello")
+		sendMsg(sock, "Hello There.")
 		ret = recvMsg(sock)
+		if not ret == 'G E N E R A L   K E N O B I !':
+			print("[ATM Client] Failed Phase 1!")
+			return False
 		print("[ATM Client] Passed Phase 1")
 		
 		# Phase 2 - client is acknowledged and receives a public RSA key from the server.
 		
-		sendMsg(sock, "Phase 2")
+		sendMsg(sock, "clientPhase2")
 		ret = recvMsg(sock)
 		e,n = ret.split()
 		print("[ATM Client] Passed Phase 2")
@@ -44,7 +47,7 @@ class ATM:
 		msg = recvEncrypted(sock, self.__secretKey)
 
 		if msg != 'serverPhase4':
-			print('That is not the server!')
+			print('[ATM Client] That is not the server!')
 			return False
 
 		print("[ATM Client] Passed Phase 4")

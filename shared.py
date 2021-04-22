@@ -1,7 +1,6 @@
 import sys
 import socket
 import AES
-# TO DO: implement AES-256 (CBC mode), maybe a digital signature added as well?
 # For MAC, add seconds passed + session id -> gives uniqueness to each MAC
 
 # receive a message - ONLY FOR SSL HANDSHAKE
@@ -10,10 +9,11 @@ def recvMsg(sock):
 	try:
 		while (True):
 			chunk = sock.recv(1024)
-			delim = chunk.decode().split()
-			if delim[len(delim) - 1] != "End": msg += ' '.join(delim)
-			else: 
-				msg += ' '.join(delim[:-1])
+			blob = chunk.decode()
+			delim = blob.split()
+			if delim[len(delim) - 1] != "End": msg += blob
+			else:
+				msg += blob[:-4]
 				break
 	finally:
 		return msg
@@ -21,7 +21,7 @@ def recvMsg(sock):
 def sendMsg(sock, msg):
 	send_msg = msg + " End"
 	sock.sendall(send_msg.encode())
-# it is very unlikely that a cipher would produce "InitVec:" or "MACTag:",
+# it is very unlikely that a cipher would produce "InitVec:" or "SHA1Tag:",
 # so these can be used for splitting a msg into text, i.v., and tag.
 # send an encrypted message
 def sendEncrypted(sock, msg, key):

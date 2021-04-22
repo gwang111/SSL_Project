@@ -36,14 +36,15 @@ cipher = encrypt(msg, e, n)
 
 # To Decrypt
 plainTxt = decrypt(cipher, d, n)
-
-# if plainTxt doesn't match for some reason, do a generateKey() again and try again
-# some times it acts weird and doesn't give the correct plainTxt
 ```
 #### AES
 ```python
 # This generates the IV in a format that works for the implementation.
 IV = AES.genInitVec()
+
+# To Encrypt
 ciphertxt = AES.encryptMsg(plaintext, key, IV)
+
+# To Decrypt
 decrypted = AES.decryptMsg(ciphertxt, key, IV)
 ```

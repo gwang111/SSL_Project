@@ -17,7 +17,7 @@ cb -> check balance
 e -> Exit
 
 ## How To Call Crypto Algos
-#### DES (If its cleaner, we can use BG.py which has a straight forward encrypt() decrypt())
+#### DES
 ```python
 # Given binary msg: bin_msg, msg: "Crypto"
 # split into 8 bit chunks
@@ -53,4 +53,11 @@ plainTxt = decrypt(cipher, d, n)
 
 # if plainTxt doesn't match for some reason, do a generateKey() again and try again
 # some times it acts weird and doesn't give the correct plainTxt
+```
+#### AES
+```python
+# This generates the IV in a format that works for the implementation.
+IV = AES.genInitVec()
+ciphertxt = AES.encryptMsg(plaintext, key, IV)
+decrypted = AES.decryptMsg(ciphertxt, key, IV)
 ```

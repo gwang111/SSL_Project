@@ -1,6 +1,7 @@
 ## SSL PROJECT
 #### By Aayush, Gary, Aidan
 
+## Workflow
 <img src="https://github.com/gwang111/SSL_Project/blob/master/visualization.png" alt="visualization" width="600" />
 
 ## How To Run:

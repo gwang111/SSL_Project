@@ -1,5 +1,6 @@
 import sys
 import socket
+import AES
 # TO DO: implement AES-256 (CBC mode), maybe a digital signature added as well?
 # For MAC, add seconds passed + session id -> gives uniqueness to each MAC
 
@@ -24,13 +25,19 @@ def sendMsg(sock, msg):
 # so these can be used for splitting a msg into text, i.v., and tag.
 # send an encrypted message
 def sendEncrypted(sock, msg, key):
-	# AES.encrypt(msg, key)
+	IV = AES.genInitVec()
+	encrypted = AES.encryptMsg(msg, key, IV)
+	# convert the sequences to a binary string for socket-friendliness (encoding is weird)
+	encrypted = AES.SeqToBin(encrypted) + "InitVec:" + AES.SeqToBin(IV)
 	# msg += "InitVec:<vector>MACtag:<tag>"
-	sendMsg(sock, msg)
-# receive a decrypted message
+	sendMsg(sock, encrypted)
+# receive an encrypted message
 def recvEncrypted(sock, key):
 	msg = recvMsg(sock)
-	# msg, info = msg.split("InitVec:")
+	toks = msg.split("InitVec:")
+	# convert the binary string back to a sequence to use with AES
+	seq = AES.BinToSeq(toks[0])
+	IV = AES.BinToSeq(toks[1])
 	# IV, tag = info.split("MACtag:")
-	# decrypted = AES.decrypt(msg, key, IV)
-	return msg
+	decrypted = AES.decryptMsg(seq, key, IV)
+	return decrypted

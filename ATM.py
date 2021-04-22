@@ -1,6 +1,5 @@
 import sys
 import socket
-import DES
 import RSA
 from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 

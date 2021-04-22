@@ -1,6 +1,5 @@
 import sys
 import socket
-import DES
 import RSA
 from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
@@ -71,7 +70,7 @@ class BankingServer:
 
 		# if the client's finish message is not "clientPhase4", that is not the client.
 		if plainTxt != "clientPhase4":
-			print('[Banking Server] Invalid User!')
+			print('[Banking Server] Failed Phase 4!')
 			return False, connection
 
 		# send a finish message back encrypted with the shared secret key.

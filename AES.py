@@ -93,9 +93,18 @@ def SubMulti(sequence, direction='f'):
 		subs += Rijn_Sbox(byte, direction)
 	return subs
 
-# generates a random 128-bit initialization vector
+# generates a random 128-bit initialization vector in byte sequence form
 def genInitVec():
-	return randbits(128)
+	bits = randbits(128)
+	vec = ''
+	for i in range(0, 128, 8):
+		# shift right i bits
+		temp = bits >> i
+		value = 0xff & temp
+		vec = chr(value) + vec
+
+	return vec
+
 # generate subkeys for use with AES using the given key
 # the algorithm is as follows:
 # 
@@ -142,8 +151,6 @@ def keyExpand(key):
 		num += 1
 	# split the stream into 15 16-byte subkeys before returning it
 	return [expand[i:i+16] for i in range(0, len(expand), 16)]
-
-key = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'
 
 # converts a 16-byte block into a column-major 4x4 table
 def BlockToTable(block):
@@ -272,6 +279,7 @@ def ShiftRows(table, rev=False):
 #    a. SubBytes
 #    b. ShiftRows
 #    c. add the last round key
+# returns the encrypted byte sequence
 def blockEnc(block, subkeys):
 	# initial addition
 	i = 0
@@ -303,6 +311,7 @@ def blockEnc(block, subkeys):
 # note that decryption travels the subkeys in reverse order.
 # Decryption is essentially applying every inverse operation in reverse order.
 # Due to the non-uniformity of AES encryption, decryption must be separate.
+# returns the decrypted byte sequence
 def blockDec(block, subkeys):
 	# inverse final round
 	i = len(subkeys)-1
@@ -330,9 +339,65 @@ def blockDec(block, subkeys):
 
 
 # encrypts the message with AES using a 256-bit key and the given initialization vector
-def encrypt(msg, key, IV):
+def encryptMsg(msg, key, IV):
 	subkeys = keyExpand(key)
+	# split message into 16-byte blocks
+	blocks = []
+	for i in range(0, len(msg), 16):
+		b = msg[i:i+16]
+		# pad with pad length if we don't have enough space
+		if len(b) < 16:
+			pad = 16-len(b)
+			b += chr(pad)*pad
+		blocks.append(b)
+
+	encrypted = ''
+	prev = IV
+	for block in blocks:
+		# XOR the current block with the previous one, beginning with prev = IV
+		chain = XORSeq(block, prev)
+		cipher = blockEnc(chain, subkeys)
+		encrypted += cipher
+		prev = cipher
+
+	return encrypted
+
 
 # decrypts the message with AES using a 256-bit key and the given initialization vector
-def decrypt(msg, key, IV):
+def decryptMsg(msg, key, IV):
 	subkeys = keyExpand(key)
+	# split message into 16-byte blocks - decryption, so no padding needed
+	blocks = []
+	for i in range(0, len(msg), 16):
+		b = msg[i:i+16]
+		blocks.append(b)
+
+	decrypted = ''
+	prev = IV
+	for block in blocks:
+		chain = blockDec(block, subkeys)
+		decrypted += XORSeq(chain, prev)
+		prev = block
+	# get the last block and check for padding
+	last_block = decrypted[-16:]
+	for i in range(len(last_block)):
+		# we are padding with pad length - filter out padding if we have a match
+		if ord(last_block[i]) == 16-i:
+			decrypted = decrypted[:-1 * (16-i)]
+
+	return decrypted
+
+# some code to test a full AES encryption and decryption with padding.
+if __name__ == '__main__':
+	message = 'My name is Yoshikage Kira. I\'m 33 years old.'
+	message = 'clientPhase4'
+	key = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'
+	IV = genInitVec()
+
+	print(message)
+	encrypted = encryptMsg(message, key, IV)
+	encrypted = SeqToBin(encrypted)
+	encrypted = BinToSeq(encrypted)
+	decrypted = decryptMsg(encrypted, key, IV)
+	print('decrypted:')
+	print(decrypted)

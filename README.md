@@ -1,7 +1,7 @@
 ## SSL PROJECT
 #### By Aayush, Gary, Aidan
 
-![alt text](https://github.com/gwang111/SSL_Project/blob/master/visualization.png)
+<img src="https://github.com/gwang111/SSL_Project/blob/master/visualization.png" alt="visualization" width="200"/>
 
 ## How To Run:
 1. Open two Linux Terminals

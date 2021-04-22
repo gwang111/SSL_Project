@@ -10,6 +10,7 @@ After the SSL Handshake finishes, you will be able to communicate with BankingSe
 
 ## Project Summary
 A Cryptography Project where we simulate the passing of Banking Operations from an ATM to a Bank.
+
 We first use SSL Handshake Protocol to establish an authenticated and secure connection between ATM and Bank using:
 1. RSA Encryption Decryption Algorithm
 2. AES Encryption Decryption Algorithm

@@ -1,6 +1,7 @@
 import sys
 import socket
 # TO DO: implement AES-256 (CBC mode), maybe a digital signature added as well?
+# For MAC, add seconds passed + session id -> gives uniqueness to each MAC
 
 # receive a message - ONLY FOR SSL HANDSHAKE
 def recvMsg(sock):

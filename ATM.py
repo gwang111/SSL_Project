@@ -6,7 +6,9 @@ from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
 class ATM:
 	def __init__(self):
-		self.__secretKey = '101010101001010011'
+		# not typing out 256 bits, deal with it.
+		self.__secretKey = '\x1a\xf4\xd5\x26\x67\xd4\x6b\xef\xc7\x25\x41\xeb\x81\xc5\x5a\x73' + \
+		'\xb1\xfc\xa9\x06\x1c\xd3\xd2\x83\xe7\x15\x4c\xc3\x41\xa2\x8d\xc7'
 
 	def SSLHandShake(self, sock):
 		# TODO https://piazza.com/class_profile/get_resource/kju77hlrkbr550/kmez90r3m4w5sn?

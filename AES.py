@@ -22,27 +22,27 @@ rcon = [0x1,0x2,0x4,0x8,0x10,0x20,0x40,0x80]
 # Galois(2^8) multiplication lookup tables
 # times 0x2
 temp = open('mix2.txt')
-mul2 = temp.read().split()
+mul2 = [int(num, 16) for num in temp.read().split()]
 temp.close()
 # times 0x3
 temp = open('mix3.txt')
-mul3 = temp.read().split()
+mul3 = [int(num, 16) for num in temp.read().split()]
 temp.close()
 # times 0x9
 temp = open('mix9.txt')
-mul9 = temp.read().split()
+mul9 = [int(num, 16) for num in temp.read().split()]
 temp.close()
 # times 0xB
 temp = open('mixB.txt')
-mulB = temp.read().split()
+mulB = [int(num, 16) for num in temp.read().split()]
 temp.close()
 # times 0xD
 temp = open('mixD.txt')
-mulD = temp.read().split()
+mulD = [int(num, 16) for num in temp.read().split()]
 temp.close()
 # times 0xE
 temp = open('mixE.txt')
-mulE = temp.read().split()
+mulE = [int(num, 16) for num in temp.read().split()]
 temp.close()
 
 # convert a sequence of bytes (chars) into its bit-string equivalent
@@ -164,6 +164,25 @@ def TableToBlock(table):
 
 	return sequence
 
+# searches the appropriate lookup table and returns the corresponding value
+def lookup(coeff, val):
+	result = val
+	# check if multiply by 2, 3, 9, 11, 13, or 14 resp.
+	# default is multiply by 1
+	if coeff == 2:
+		result = mul2[val]
+	elif coeff == 3:
+		result = mul3[val]
+	elif coeff == 9:
+		result = mul9[val]
+	elif coeff == 11:
+		result = mulB[val]
+	elif coeff == 13:
+		result = mulD[val]
+	elif coeff == 14:
+		result = mulE[val]
+	return result
+
 # performs a column mix on the 4x4 table to distribute s-box nonlinearity
 # essentially performs the following matrix operation under Galois(2^8):
 # [d_0]   [2 3 1 1][b_0]    d_0 = 2*b_0 + 3*b_1 + 1*b_2 + 1*b_3
@@ -177,13 +196,18 @@ def MixColumns(table):
 			  [1, 2, 3, 1],
 			  [1, 1, 2, 3],
 			  [3, 1, 1, 2]]
-	new_table = []
-	# get each column, then perform the operations on it
-	for r in range(4):
-		temp_arr = []
-		for c in range(4):
-			t = 0
-
+	new_table = [[0, 0, 0, 0],
+				 [0, 0, 0, 0],
+				 [0, 0, 0, 0],
+				 [0, 0, 0, 0]]
+	# for each column in the original table
+	for i in range(4):
+		# for each row/col in the coefficient matrix
+		for j in range(4):
+			for k in range(4):
+				new_table[j][i] ^= lookup(coeffs[j][k], ord(table[k][i]))
+	# converts the new table into byte representations
+	return [[chr(entry) for entry in row] for row in new_table]
 
 # inverts a column mix on the 4x4 table to ready it for inverse s-box
 # essentially performs the following matrix operation under Galois(2^8):
@@ -198,6 +222,42 @@ def InvColumns(table):
 			  [9, 14, 11, 13],
 			  [13, 9, 14, 11],
 			  [11, 13, 9, 14]]
+	new_table = [[0, 0, 0, 0],
+				 [0, 0, 0, 0],
+				 [0, 0, 0, 0],
+				 [0, 0, 0, 0]]
+	# for each column in the original table
+	for i in range(4):
+		# for each row/col in the coefficient matrix
+		for j in range(4):
+			for k in range(4):
+				new_table[j][i] ^= lookup(coeffs[j][k], ord(table[k][i]))
+	return [[chr(entry) for entry in row] for row in new_table]
+
+# performs circular shifts on the rows of the 4x4 table.
+# left for rev = False (encryption), right for rev = True (decryption)
+# the nth row gets shifted n times, for n = 0 to len(table)-1.
+def ShiftRows(table, rev=False):
+	new_table = table
+	for n in range(len(table)):
+		t_row = new_table[n]
+		# 0 iterations for row 0, 1 iteration for row 1, etc.
+		for _ in range(n):
+			# are we decrypting?
+			if rev:
+				# pop the last val, then insert it at the beginning.
+				temp = t_row.pop()
+				t_row.insert(0, temp)
+			# we are encrypting.
+			else:
+				# store the first val, then move the list up one. append the stored value.
+				temp = t_row[0]
+				t_row = t_row[1:]
+				t_row.append(temp)
+		# assign the new row to the table
+		new_table[n] = t_row
+
+	return new_table
 
 # performs AES encryption on a 16-byte/128-bit block
 # high-level description - AES treats 16-byte blocks as 4x4 arrays
@@ -223,13 +283,19 @@ def blockEnc(block, subkeys):
 		encrypted = SubMulti(encrypted, 'f')
 		enc_table = BlockToTable(encrypted)
 		# ShiftRows
+		enc_table = ShiftRows(enc_table, rev=False)
 		# MixColumns - this distributes the S-box's nonlinearity
+		enc_table = MixColumns(enc_table)
 		encrypted = TableToBlock(enc_table)
 		encrypted = XORSeq(encrypted, subkeys[i])
 		i += 1
 	# final round - i should be 14 at this point
 	encrypted = SubMulti(encrypted, 'f')
 	# ShiftRows
+	enc_table = BlockToTable(encrypted)
+	enc_table = ShiftRows(enc_table, rev=False)
+	encrypted = TableToBlock(enc_table)
+
 	encrypted = XORSeq(encrypted, subkeys[i])
 	return encrypted
 
@@ -242,28 +308,25 @@ def blockDec(block, subkeys):
 	i = len(subkeys)-1
 	decrypted = XORSeq(block, subkeys[i])
 	# ShiftRows
+	dec_table = BlockToTable(decrypted)
+	dec_table = ShiftRows(dec_table, rev=True)
+	decrypted = TableToBlock(dec_table)
 	# use the backwards Rijndael S-box
 	decrypted = SubMulti(decrypted, 'b')
 	for _ in range(13):
 		i -= 1
 		decrypted = XORSeq(decrypted, subkeys[i])
 		dec_table = BlockToTable(decrypted)
-		# InvColumns - this restores the original S-box
+		# InvColumns - this restores the original S-box permutation
+		dec_table = InvColumns(dec_table)
 		# ShiftRows
+		dec_table = ShiftRows(dec_table, rev=True)
 		decrypted = TableToBlock(dec_table)
 		decrypted = SubMulti(decrypted, 'b')
 	# inverse first round - i should be 1 by this point
 	i -= 1
 	decrypted = XORSeq(decrypted, subkeys[i])
 	return decrypted
-
-subs = keyExpand(key)
-text = 'abcdefghijklmnop'
-encrypted = blockEnc(text, subs)
-decrypted = blockDec(encrypted, subs)
-print('initial:', text)
-print('encrypt:', encrypted)
-print('decrypt:', decrypted)
 
 
 # encrypts the message with AES using a 256-bit key and the given initialization vector

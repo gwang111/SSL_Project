@@ -13,6 +13,7 @@ A Cryptography Project where we simulate the passing of Banking Operations from 
 We first use SSL Handshake Protocol to establish an authenticated and secure connection between ATM and Bank using:
 1. RSA Encryption Decryption Algorithm
 2. AES Encryption Decryption Algorithm
+
 Then we us the AES Encryption Decryption Algorithm to pass encrypted Banking Operations between ATM and Bank to simulate
 Banking Queries that could theoretically be called in real world banking applications. 
 

@@ -44,7 +44,14 @@ class BankingServer:
 		print("[Banking Server] Passed Phase 1")
 		
 		# Phase 2 - server sends a public RSA key to the client
-		e,n,d,p = RSA.generateKeys()
+		e, n, d, p = None, None, None, None
+		# Get a valid public and private keys
+		while (True):
+			e,n,d,p = RSA.generateKeys()
+			test = RSA.encrypt("Test", e, n)
+			test2 = RSA.decrypt(test, d, n)
+			if (test2 == "Test"): break
+		
 		pub_key = (str(e) + ' ' + str(n))
 		ret = recvMsg(connection)
 		sendMsg(connection, pub_key)

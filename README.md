@@ -29,7 +29,8 @@ Banking Queries that could theoretically be called in real world banking applica
 ## How To Call Crypto Algos
 #### RSA
 ```python
-e, n, d, n = generateKeys() # pub key = (e, n), priv key = (d, n)
+# Public Key = (e, n), Private Key = (d, n)
+e, n, d, n = generateKeys()
 
 # To Encrypt
 cipher = encrypt(msg, e, n)

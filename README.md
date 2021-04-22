@@ -9,12 +9,12 @@
 After the SSL Handshake finishes, you will be able to communicate with BankingServer.
 
 ## Banking Operations
-w: 1000 -> withdraw $1000<br>
-d: 1000 -> deposit $1000<br>
-cb -> check balance
+1. w: 1000 -> withdraw $1000<br>
+2. d: 1000 -> deposit $1000<br>
+3. cb -> check balance
 
 ## General Operations
-e -> Exit
+1. e -> Exit
 
 ## How To Call Crypto Algos
 #### RSA

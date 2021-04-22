@@ -17,30 +17,6 @@ cb -> check balance
 e -> Exit
 
 ## How To Call Crypto Algos
-#### DES
-```python
-# Given binary msg: bin_msg, msg: "Crypto"
-# split into 8 bit chunks
-binMsg = toBinary(toHex(msg))
-cypher = ''
-key = '1100011110'
-toChunk = binMsg
-keySet = KeyGen(key)
-
-# For Encryption
-while len(toChunk) != 0:
-    cypher += twoRoundDES(toChunk[:8], keySet)
-    toChunk = toChunk[8:]
-
-# For Decryption
-plainTxt = ''
-while len(cypher) != 0:
-    plainTxt += twoRoundDES(cypher[:8], [keySet[1], keySet[0]])
-    cypher = cypher[8;]
-```
-#### SHA-1 Hash
-#### Just call SHA1(msg) to get its digest
-
 #### RSA
 ```python
 e, n, d, n = generateKeys() # pub key = (e, n), priv key = (d, n)

@@ -1,5 +1,11 @@
 from secrets import randbits
 
+class MACdata:
+	def __init__(self, key):
+		self.key = key
+		self.sessionID = 0
+		self.timeStamp = 0
+
 # read data separately to save on processing power
 # forward Rijndael S-box
 temp = open('rijndael-forward.txt')
@@ -59,6 +65,26 @@ def BinToSeq(binary):
 		sequence += chr(int(temp, 2))
 		byte = byte[8:]
 	return sequence
+
+# converts a number to a sequence and optionally adds leading zeros given a minimum size
+def NumToSeq(number, min_size=0):
+	# go through 1 hex byte at a time
+	temp = hex(number)[2:]
+	seq = ''
+	# go in reverse order, to account for leading zeros.
+	for i in range(len(temp), 0, -2):
+		seq = chr(int(temp[max(i-2, 0):i], 16)) + seq
+	# add leading zeros to get to the specified minimum size
+	while not len(seq) >= min_size:
+		seq = '\x00' + seq
+	return seq
+
+# converts a sequence to a number equivalent.
+def SeqToNum(sequence):
+	temp = ''
+	for byte in sequence:
+		temp += hex(ord(byte))[2:]
+	return int(temp, 16)
 
 # perform an XOR between two sequences of equal length.
 # because of the nature of XOR, it can be split up between each byte (no carrying)
@@ -386,6 +412,15 @@ def decryptMsg(msg, key, IV):
 			decrypted = decrypted[:-1 * (16-i)]
 
 	return decrypted
+
+# creates a CBC MAC - note: Never use the same key as the actual encrypted message.
+def createMAC(msg, MACinfo):
+	ID, Stamp = NumToSeq(MACinfo.sessionID, 8), NumToSeq(MACinfo.timeStamp, 8)
+	# encrypt using the zero vector for initialization and a prepended ID/Stamp
+	chain = encryptMsg(ID + Stamp + msg, MACinfo.key, '\x00'*16)
+	# take the last block and use it as the MAC address
+	MAC = chain[-16:]
+	return MAC
 
 # some code to test a full AES encryption and decryption with padding.
 if __name__ == '__main__':

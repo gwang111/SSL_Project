@@ -72,7 +72,14 @@ class BankingServer:
 		self.__MAC.sessionID = temp
 		
 		# Phase 2 - server sends a public RSA key to the client
-		e,n,d,p = RSA.generateKeys()
+		e, n, d, p = None, None, None, None
+		# Get a valid public and private keys
+		while (True):
+			e,n,d,p = RSA.generateKeys()
+			test = RSA.encrypt("Test", e, n)
+			test2 = RSA.decrypt(test, d, n)
+			if (test2 == "Test"): break
+		
 		pub_key = (str(e) + ' ' + str(n))
 		ret, MAC = recvMsg(connection)
 		if not self.checkMAC(ret, MAC):
@@ -180,8 +187,7 @@ class BankingServer:
 				self.__MAC.timeStamp += 1
 				sendEncrypted(connection, resp, self.__secretKey, self.__MAC)
 
-
-	def openingServer(self): 
+	def openingServer(self):
 		# Establish listening from port
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -201,7 +207,6 @@ class BankingServer:
 			connection.close()
 			print('[Banking Server] Handshake Protocol Failed. Exiting...')
 			return
-
 
 def startingUp():
 	server = BankingServer()

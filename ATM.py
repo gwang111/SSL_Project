@@ -122,7 +122,6 @@ class ATM:
 		sock.close()
 		print('[ATM Client] Banking Operations Successful. Exiting...')
 
-
 	def startATM(self):
 		print('[ATM Client] Started...')
 		while (True):
@@ -138,11 +137,9 @@ class ATM:
 				self.run()
 				return
 
-
 def startup():
 	client = ATM()
 	client.startATM()
 	print('[ATM Client] Shutting Down...')
 
 if __name__ == '__main__': startup()
-

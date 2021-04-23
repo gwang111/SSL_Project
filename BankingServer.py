@@ -1,6 +1,7 @@
 import sys
 import socket
 import RSA
+import SHA1
 from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
 class Account:
@@ -76,12 +77,12 @@ class BankingServer:
 		plainTxt = recvEncrypted(connection, self.__secretKey)
 
 		# if the client's finish message is not "clientPhase4", that is not the client.
-		if plainTxt != "clientPhase4":
+		if plainTxt != SHA1.SHA1("clientPhase4"):
 			print('[Banking Server] Failed Phase 4!')
 			return False, connection
 
 		# send a finish message back encrypted with the shared secret key.
-		sendEncrypted(connection, 'serverPhase4', self.__secretKey)
+		sendEncrypted(connection, SHA1.SHA1('serverPhase4'), self.__secretKey)
 
 		print("[Banking Server] Passed Phase 4")
 
@@ -150,7 +151,6 @@ class BankingServer:
 					print("[Banking Server] Failed Command")
 				sendEncrypted(connection, resp, self.__secretKey)
 
-
 	def openingServer(self): 
 		# Establish listening from port
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -171,7 +171,6 @@ class BankingServer:
 			connection.close()
 			print('[Banking Server] Handshake Protocol Failed. Exiting...')
 			return
-
 
 def startingUp():
 	server = BankingServer()

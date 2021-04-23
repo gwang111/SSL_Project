@@ -1,6 +1,7 @@
 import sys
 import socket
 import RSA
+import SHA1
 from shared import sendMsg, recvMsg, sendEncrypted, recvEncrypted
 
 class ATM:
@@ -39,11 +40,11 @@ class ATM:
 		# Phase 4 - client/server send finish messages to each other encrypted with the shared secret key.
 
 		# client -> server
-		sendEncrypted(sock, 'clientPhase4', self.__secretKey)
+		sendEncrypted(sock, SHA1.SHA1('clientPhase4'), self.__secretKey)
 		# server -> client
 		msg = recvEncrypted(sock, self.__secretKey)
 
-		if msg != 'serverPhase4':
+		if msg != SHA1.SHA1('serverPhase4'):
 			print('That is not the server!')
 			return False
 
@@ -84,7 +85,6 @@ class ATM:
 		sock.close()
 		print('[ATM Client] Banking Operations Successful. Exiting...')
 
-
 	def startATM(self):
 		print('[ATM Client] Started...')
 		while (True):
@@ -100,11 +100,9 @@ class ATM:
 				self.run()
 				return
 
-
 def startup():
 	client = ATM()
 	client.startATM()
 	print('[ATM Client] Shutting Down...')
 
 if __name__ == '__main__': startup()
-

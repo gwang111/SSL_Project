@@ -52,8 +52,3 @@ ciphertxt = AES.encryptMsg(plaintext, key, IV)
 # To Decrypt
 decrypted = AES.decryptMsg(ciphertxt, key, IV)
 ```
-#### SHA-1
-```python
-msg = "foo"
-SHA1.SHA1(msg)
-```
